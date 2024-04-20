@@ -13,9 +13,10 @@ import pickle
 import random
 from pathlib import Path
 from types import FunctionType
-from typing import List, Optional
+from typing import Dict, List, Optional, Type
 
 import hydra
+import numpy as np
 from omegaconf import DictConfig, ListConfig
 
 from nnsmith.backends import BackendFactory
@@ -148,11 +149,11 @@ def main(cfg: DictConfig):
         output_dirs = [Path(output_dirs)]
 
     for i, model_path in enumerate(model_paths):
-        model = ModelType.load(model_path)
+        model: Model = ModelType.load(model_path)
         model_basename = os.path.basename(os.path.normpath(model_path))
 
-        test_inputs = None
-        test_outputs = None
+        test_inputs:Optional[Dict[str,np.ndarray]] = None
+        test_outputs:Optional[Dict[str,np.ndarray]] = None
         provider = "unknown"
 
         # 1. Use raw_input as test_inputs if specified;

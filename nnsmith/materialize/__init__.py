@@ -6,7 +6,7 @@ import pickle
 from abc import ABC, abstractmethod
 from enum import Enum
 from os import PathLike
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Tuple, Type, TypeVar, Union
 
 # Enables type checking while avoiding circular imports.
 if TYPE_CHECKING:
@@ -211,7 +211,7 @@ class Model(ABC):
         raise NotImplementedError
 
     @staticmethod
-    def init(name, backend_target=None) -> Type["Model"]:
+    def init(name: str, backend_target:Optional[Literal["gpu"] | Literal["cuda"]]=None) -> Type["Model"]:
         if name is None:
             raise ValueError(
                 "Model type cannot be None. Use `model.type=[torch|onnx|tensorflow]`."
