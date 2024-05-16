@@ -12,6 +12,7 @@ tmp/
 *.lz4
 *.profraw
 fuzz_report/
+fuzz_report_*/
 nnsmith_output/
 nnsmith/_version.py
 
@@ -162,3 +163,4 @@ cython_debug/
 # Exclude
 !requirements/**/*.txt
 .DS_Store
+fuzz_gcov_*/
