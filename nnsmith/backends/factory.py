@@ -3,7 +3,7 @@ import re
 import sys
 import traceback
 from abc import ABC, abstractmethod
-from typing import Callable, Dict, List, Optional, Union
+from typing import Callable, Dict, List, Literal, Optional, Union
 
 import numpy as np
 
@@ -354,13 +354,13 @@ class BackendFactory(ABC):
 
     @staticmethod
     def init(
-        name: str,
+        name: Literal["onnxruntime", "tvm", "tensorrt", "xla", "tflite", "pt2", "torchjit", "torchdynamo", ],
         target: str = "cpu",
         ad: str = None,
         optmax: bool = True,
         parse_name=False,
         **kwargs,
-    ):
+    ) -> "BackendFactory":
         if name is None:
             raise ValueError(
                 "Backend type cannot be None. Use `backend.type=[onnxruntime|tvm|tensorrt|xla|tflite|pt2|torchjit]`"
@@ -427,5 +427,8 @@ class BackendFactory(ABC):
             from nnsmith.backends.pt2 import PT2
 
             return PT2(target=target, optmax=optmax, ad=ad, **kwargs)
+        elif name == "torchdynamo":
+            from nnsmith.backends.torchdynamo import TorchDynamo
+            return TorchDynamo(target=target, optmax=optmax, **kwargs)
         else:
             raise ValueError(f"unknown backend: {name}")

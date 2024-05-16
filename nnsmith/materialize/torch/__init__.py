@@ -215,7 +215,8 @@ class TorchModel(Model, ABC):
                 self.native_model.forward = (
                     f"lambda {fn_args}: SymbolNet.forward(self, {fn_kwargs})"
                 )
-                traced = fx.symbolic_trace(self.native_model)
+                import torch.fx
+                traced : torch.fx.graph_module.GraphModule = fx.symbolic_trace(self.native_model)
                 self.native_model.forward = tmp
             else:
                 traced = fx.symbolic_trace(self.native_model)

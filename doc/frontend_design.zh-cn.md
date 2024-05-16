@@ -16,3 +16,7 @@ id_checker：检查ID是否非负。
 错误处理：在多个地方使用了断言（assert）来确保操作的正确性，并在违反条件时抛出异常。
 
 模型具体化：GraphIR类中的concretize方法允许使用Z3模型具体化操作和张量，这在符号执行和模型检查中很有用。
+
+
+    def retval_string(inst_id: int, ret_idx: int) -> str:
+        return f"v{inst_id}{VARNAME_SPLITTER}{ret_idx}"
