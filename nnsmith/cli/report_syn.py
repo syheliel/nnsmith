@@ -10,9 +10,9 @@ from nnsmith.materialize import Model, Render
 
 @hydra.main(version_base=None, config_path="../config", config_name="main")
 def main(cfg: DictConfig):
-    RENDER_LOG.warning(
-        "The duty of `nnsmith.report_syn` is to produce a BASIC but executable Python script. It may not reproduce the original bug as the report may not use the original seed, input data, and output oracles. If you want to more strictly reproduce the bug, please use `nnsmith.model_exec`."
-    )
+    # RENDER_LOG.warning(
+        # "The duty of `nnsmith.report_syn` is to produce a BASIC but executable Python script. It may not reproduce the original bug as the report may not use the original seed, input data, and output oracles. If you want to more strictly reproduce the bug, please use `nnsmith.model_exec`."
+    # )
 
     cmp_cfg = cfg["cmp"]
     model_cfg = cfg["model"]
