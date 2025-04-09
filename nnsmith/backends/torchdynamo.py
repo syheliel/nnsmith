@@ -5,6 +5,7 @@ from typing import Dict, List, Tuple
 import numpy as np
 import torch
 from multipledispatch import dispatch
+import intel_extension_for_pytorch as ipex
 
 from nnsmith.backends.factory import BackendCallable, BackendFactory
 from nnsmith.materialize.torch import TorchModel, numpify
@@ -42,7 +43,7 @@ class TorchDynamo(BackendFactory):
         else:
             torch_net = torch_net.eval()
 
-        compiled = torch.compile(torch_net)
+        compiled = torch.compile(torch_net, backend="ipex")
 
         def closure(inputs: Dict[str, np.ndarray]) -> Dict[str, np.ndarray]:
             nonlocal do_grad_check

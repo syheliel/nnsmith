@@ -23,7 +23,7 @@ from copy import deepcopy
 from dataclasses import dataclass
 from os import PathLike
 from typing import Dict, List, Optional, Type
-
+from loguru import logger
 import z3
 from appdirs import user_cache_dir
 from omegaconf import OmegaConf
@@ -40,10 +40,10 @@ from nnsmith.abstract.op import (
 )
 from nnsmith.backends import BackendFactory
 from nnsmith.gir import GraphIR, InstExpr
-from nnsmith.logging import DTEST_LOG
 from nnsmith.materialize import Model, TestCase
 
 NNSMITH_CACHE_DIR = user_cache_dir(f"nnsmith-{__version__}")
+logger.info(f"NNSMITH_CACHE_DIR: {NNSMITH_CACHE_DIR}")
 
 
 def get_cache_name(model_cls: Type[Model], factory: BackendFactory, grad: bool) -> str:
@@ -105,7 +105,7 @@ def infer_topset_from_scratch(
         if node_t is Input or node_t is Constant:
             continue
 
-        DTEST_LOG.info(f"[{idx + 1} / {n_ops}] ===> Trying {node_t}")
+        logger.info(f"[{idx + 1} / {n_ops}] ===> Trying {node_t}")
 
         available_idtypes = node_t.in_dtypes
 
@@ -180,16 +180,16 @@ def infer_topset_from_scratch(
                 # Test compilation + simple inference;
                 out = factory.make_testcase(model)
                 if isinstance(out, TestCase):  # Pass
-                    DTEST_LOG.info(
+                    logger.info(
                         f"=====> [Success] at {concrete_op}({itypes}) => {otypes}"
                     )
                     op_itypes.add(itypes)
                     op_otypes.add(otypes)
                 else:  # Fail
-                    DTEST_LOG.warning(
+                    logger.warning(
                         f"=====> [Failure] at {concrete_op}({itypes}) => {otypes}"
                     )
-                    DTEST_LOG.debug(f"{out.log}")
+                    logger.debug(f"{out.log}")
             else:  # Test model dumping
                 with tempfile.TemporaryDirectory() as tmpdirname:
                     try:
@@ -198,16 +198,16 @@ def infer_topset_from_scratch(
                             tmpdirname, model.name_prefix() + model.name_suffix()
                         )
                         model.dump(model_path)
-                        DTEST_LOG.info(
+                        logger.info(
                             f"=====> [Success] at {concrete_op}({itypes}) => {otypes}"
                         )
                         op_itypes.add(itypes)
                         op_otypes.add(otypes)
                     except Exception as e:
-                        DTEST_LOG.warning(
+                        logger.warning(
                             f"=====> [Failure] at {concrete_op}({itypes}) => {otypes}"
                         )
-                        DTEST_LOG.debug(f"{e}")
+                        logger.debug(f"{e}")
 
         if op_itypes:
             topset[op.name()] = OpConfig(
@@ -246,13 +246,13 @@ def auto_opconfig(
     if not os.path.exists(NNSMITH_CACHE_DIR):
         os.makedirs(NNSMITH_CACHE_DIR)
     if os.path.exists(cache_path):
-        DTEST_LOG.info(f"Loading topset from {cache_path}.")
-        DTEST_LOG.info(
+        logger.info(f"Loading topset from {cache_path}.")
+        logger.info(
             "To regenerate the topset, delete the cache file above and restart."
         )
         return load_topset(cache_path)
     else:
-        DTEST_LOG.info(f"Inferring topset from scratch and cache it to {cache_path}.")
+        logger.info(f"Inferring topset from scratch and cache it to {cache_path}.")
         opset = infer_topset_from_scratch(model_cls, factory, grad=grad)
         dump_topset(opset, cache_path)
         return opset

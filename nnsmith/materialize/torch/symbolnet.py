@@ -1,4 +1,6 @@
 import logging
+from typing import Callable, List, Tuple
+from loguru import logger
 import os
 import time
 import warnings
@@ -113,7 +115,7 @@ class SymbolNet(nn.Module):
     ):
         super(SymbolNet, self).__init__()
         # <TorchFunc, <keys -> inputs>, <keys -> outputs>, original op>
-        self.instructions = []
+        self.instructions:List[Tuple[Callable, List[str], List[str], AbsOpBase]] = []
         self.n_vulnerable_op = 0
 
         self.proxy_enabled_ = False
